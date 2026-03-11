@@ -6,6 +6,7 @@ import { generateQuestion } from "../services/question.service.js";
 import { textToSpeech } from "../services/tts.service.js";
 import { speechToText } from "../services/stt.service.js";
 import { evaluateAnswer } from "../services/evaluation.service.js";
+// import { dummyobj, dummyReplyObj } from "../utils/constants.js";
 
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -23,6 +24,9 @@ router.post("/start", async (req, res) => {
   const { category, stack, experience } = req.body;
 
   console.log("category, stack, experience -->>", category, stack, experience);
+
+  // TODO: Remove it after testing
+  // return res.json(dummyobj);
 
   const questionData = await generateQuestion(category, stack, experience);
 
@@ -47,6 +51,9 @@ router.post("/answer", upload.single("audio"), async (req, res) => {
 
   console.log("req.file -->>", req.file);
   console.log("question -->>", question);
+
+  // TODO: Remove it after testing
+  // return res.json(dummyReplyObj);
 
   const answerText = await speechToText(req.file.path);
 

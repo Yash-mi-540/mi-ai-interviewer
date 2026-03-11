@@ -1,11 +1,11 @@
 import { useState, useRef, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { blobToBase64 } from "../../lib/utils";
+// import { blobToBase64 } from "../../lib/utils";
 import { PlayCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-function UserAudioListener({ question }) {
+function UserAudioListener({ question, setAnswer }) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -84,6 +84,10 @@ function UserAudioListener({ question }) {
 
       const data = await response.data;
       return data;
+    },
+    onSuccess: (data) => {
+      console.log("Answer evaluated:", data);
+      setAnswer(data);
     },
   });
 
@@ -183,6 +187,7 @@ function UserAudioListener({ question }) {
                   evaluateAnswerMutation.isLoading ||
                   evaluateAnswerMutation.isSuccess
                 }
+                loading={evaluateAnswerMutation.isLoading}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

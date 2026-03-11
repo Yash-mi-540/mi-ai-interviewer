@@ -8,6 +8,7 @@ import HandwritingText from "../../components/interview/HandwritingText";
 import ProgressSteps from "../../components/interview/ProgressSteps";
 import { useMutation } from "@tanstack/react-query";
 import UserAudioListener from "./UserAudioListener";
+import ShowAnswerDialog from "./ShowAnswerDialog";
 
 const TOTAL_QUESTIONS = 10;
 
@@ -25,6 +26,7 @@ export default function Interview() {
   const [answers, setAnswers] = useState([]);
   const [phase, setPhase] = useState("loading");
   const [isTypingDone, setIsTypingDone] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
   const [audioBase64, setAudioBase64] = useState(null);
   const audioRef = useRef(null);
   const audioUnlockedRef = useRef(false);
@@ -103,48 +105,13 @@ export default function Interview() {
   }, [audioBase64]);
 
   const handleSubmitAnswer = async () => {
-    if (!answer.trim()) return;
+    // if (!answer.trim()) return;
     setPhase("evaluating");
 
     const updated = [...answers, { question: currentQuestion, answer }];
     setAnswers(updated);
 
     if (questionIndex + 1 >= TOTAL_QUESTIONS) {
-      const scorePrompt = `Rate this technical interview session for ${stack} (${experience} level).
-Session: ${JSON.stringify(updated)}.
-Return JSON: { "questions": [{"question":"...","answer":"...","score":0-10,"feedback":"..."}], "overall_score": 0-10 }`;
-
-      // const result = await base44.integrations.Core.InvokeLLM({
-      //   prompt: scorePrompt,
-      //   response_json_schema: {
-      //     type: "object",
-      //     properties: {
-      //       questions: {
-      //         type: "array",
-      //         items: {
-      //           type: "object",
-      //           properties: {
-      //             question: { type: "string" },
-      //             answer: { type: "string" },
-      //             score: { type: "number" },
-      //             feedback: { type: "string" },
-      //           },
-      //         },
-      //       },
-      //       overall_score: { type: "number" },
-      //     },
-      //   },
-      // });
-
-      // const session = await base44.entities.InterviewSession.create({
-      //   role_category: category,
-      //   tech_stack: stack,
-      //   experience_level: experience,
-      //   questions: result.questions,
-      //   overall_score: result.overall_score,
-      //   status: "completed",
-      // });
-
       // sessionStorage.setItem("interview_session_id", session.id);
       navigate(createPageUrl("Results"));
     } else {
@@ -311,7 +278,10 @@ Return JSON: { "questions": [{"question":"...","answer":"...","score":0-10,"feed
                     {answer.length} chars
                   </div> */}
 
-                  <UserAudioListener question={currentQuestion} />
+                  <UserAudioListener
+                    setAnswer={setAnswer}
+                    question={currentQuestion}
+                  />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -319,10 +289,19 @@ Return JSON: { "questions": [{"question":"...","answer":"...","score":0-10,"feed
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Answer freely — AI adapts to your response
                   </div>
+
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    className="bg-[#10b981] text-white px-4 py-2 rounded-lg"
+                    onClick={() => setShowAnswer(true)}
+                  >
+                    Show Answer
+                  </motion.button>
+
                   <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={handleSubmitAnswer}
-                    disabled={!answer.trim() || phase === "evaluating"}
+                    // disabled={!answer.trim() || phase === "evaluating"}
                     className="btn-primary flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {phase === "evaluating" ? (
@@ -367,6 +346,13 @@ Return JSON: { "questions": [{"question":"...","answer":"...","score":0-10,"feed
           ))}
         </div>
       </motion.div>
+
+      {/* Show Answer Dialog */}
+      <ShowAnswerDialog
+        open={showAnswer}
+        onOpenChange={setShowAnswer}
+        answer={answer}
+      />
     </div>
   );
 }
