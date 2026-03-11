@@ -31,8 +31,8 @@ function UserAudioListener({ question }) {
         });
 
         // TODO: Will be used for testing the recorded audio
-        const base64 = await blobToBase64(audioBlob);
-        console.log({ audioBlob, base64 });
+        // const base64 = await blobToBase64(audioBlob);
+        // console.log({ audioBlob, base64 });
 
         setAudioBlob(audioBlob);
         stream.getTracks().forEach((track) => track.stop());
@@ -68,8 +68,6 @@ function UserAudioListener({ question }) {
         throw new Error("No audio recorded");
       }
 
-      console.log("question >>>", question);
-
       const formData = new FormData();
       formData.append("question", question);
       formData.append("audio", audioBlob, "answer.wav");
@@ -85,7 +83,6 @@ function UserAudioListener({ question }) {
       );
 
       const data = await response.data;
-      console.log("data >>>", data);
       return data;
     },
   });

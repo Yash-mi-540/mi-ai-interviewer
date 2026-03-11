@@ -41,9 +41,6 @@ export default function Interview() {
         },
       );
       const data = await response.data;
-
-      console.log("data >>>", data);
-
       return data;
     },
   });
