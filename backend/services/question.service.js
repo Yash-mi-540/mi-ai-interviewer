@@ -10,8 +10,6 @@ export async function generateQuestion(category, stack, experience) {
     prevAnswers: [],
   });
 
-  console.log("prompt -->>", prompt);
-
   // TODO: Remove it after testing
   // return JSON.parse(JSON.stringify(dummyobj));
 

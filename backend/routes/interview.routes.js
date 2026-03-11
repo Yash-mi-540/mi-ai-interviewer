@@ -30,11 +30,7 @@ router.post("/start", async (req, res) => {
 
   const questionData = await generateQuestion(category, stack, experience);
 
-  console.log("questionData -->>", questionData);
-
   const audioBuffer = await textToSpeech(questionData.question);
-
-  console.log("audioBuffer -->>", audioBuffer);
 
   const audioBase64 = audioBuffer.toString("base64");
 
@@ -49,19 +45,12 @@ router.post("/start", async (req, res) => {
 router.post("/answer", upload.single("audio"), async (req, res) => {
   const { question } = req.body;
 
-  console.log("req.file -->>", req.file);
-  console.log("question -->>", question);
-
   // TODO: Remove it after testing
   // return res.json(dummyReplyObj);
 
   const answerText = await speechToText(req.file.path);
 
-  console.log("answerText -->>", answerText);
-
   const evaluation = await evaluateAnswer(question, answerText);
-
-  console.log("evaluation -->>", evaluation);
 
   const feedbackText = `
 Strengths: ${evaluation.strengths?.join(", ") || "None"}
@@ -69,11 +58,7 @@ Gaps: ${evaluation.gaps?.join(", ") || "None"}
 Improvements: ${evaluation.improvements?.join(", ") || "None"}
 `;
 
-  console.log("feedbackText -->>", feedbackText);
-
   const feedbackAudio = await textToSpeech(feedbackText);
-
-  console.log("feedbackAudio -->>", feedbackAudio);
 
   res.json({
     answerText,
